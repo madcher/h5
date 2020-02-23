@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -19,12 +19,27 @@ let testArr = [
   }
 ]
 
-const onDragEnd = () => {
-  console.log('end');
-}
-
 
 function App() {
+  //items state
+  const [order, setOrder] = useState(testArr);
+
+  const onDragEnd = (result) => {
+
+    const { destination, source, draggableId} = result;
+
+    if (!destination) {
+      return;
+    }
+
+    const newOrder = [...order];
+    newOrder.splice(source.index, 1);
+    newOrder.splice(destination.index, 0, order[source.index]);
+    setOrder(newOrder);
+
+  }
+
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
         <header> Header </header>
@@ -35,9 +50,9 @@ function App() {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
-              {testArr.map((el, ind) => {
+              {order.map((el, ind) => {
                 return (
-                  <Draggable index={ind} draggableId={el.name}>
+                  <Draggable index={ind} draggableId={el.name} key={el.name}>
                     {
                       (provided) => (
                         <div
